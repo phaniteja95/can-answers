@@ -23,6 +23,8 @@ func WriteRandData(f *os.File, size int64, off int64) {
 func WriteInChunks (f *os.File, size int64) {
 	var size_rem int64 = size
 	var off int64 = 0
+
+	// Write the file full of random data.
 	for size_rem > 0 {
 		if size_rem < CHUNK_SIZE {
 			WriteRandData(f, size_rem, off)	
@@ -35,6 +37,7 @@ func WriteInChunks (f *os.File, size int64) {
 }
 
 func Shred(name string) {
+	// Open the file
 	f, err := os.OpenFile(name, os.O_WRONLY, 0)
 	if err != nil {
 		fmt.Println("ERROR: File open error")
@@ -51,12 +54,15 @@ func Shred(name string) {
 		return
 	}
 
+	// Get file size
 	size := stats.Size()
 	i := 0
 
 	fmt.Printf("INFO: File size %d\n", size)
 	fmt.Printf("INFO: Writing file now\n")
 
+	// Write file in chunks. This avoids having a large buffer in memory
+	// when writing a large file.
 	for i < 3 {
 
 		WriteInChunks(f, size)
